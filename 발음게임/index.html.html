@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>목소리 탈출 맵 · 자음 체계</title>
+<style>
+:root{--bg:#fbf7ef;--card:#fff;--ink:#2a2438;--sub:#6b6580;--line:#e2dcec;--pri:#6c4fd6;--ok:#2e9e5b;--bad:#d64f5f;--okbg:#e6f6ec;--badbg:#fbe8ea;--yel:#f6c945;
+box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#17141f;--card:#221e2d;--ink:#f0ecf8;--sub:#a9a3bd;--line:#38314a;--pri:#9b84ff;--ok:#5fcf8b;--bad:#ff7b8a;--okbg:#1d3326;--badbg:#3b2229}}
+:root[data-theme="dark"]{--bg:#17141f;--card:#221e2d;--ink:#f0ecf8;--sub:#a9a3bd;--line:#38314a;--pri:#9b84ff;--ok:#5fcf8b;--bad:#ff7b8a;--okbg:#1d3326;--badbg:#3b2229}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:"Pretendard","Noto Sans KR",system-ui,sans-serif;line-height:1.55}
+.wrap{max-width:640px;margin:0 auto;padding:16px}
+h1{font-size:1.4rem;margin:.2rem 0}
+.card{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:16px;margin:12px 0}
+.map{display:flex;align-items:center;justify-content:space-between;position:relative;padding:18px 8px 6px}
+.map:before{content:"";position:absolute;left:8%;right:8%;top:38px;height:4px;background:var(--line);border-radius:2px}
+.node{position:relative;text-align:center;font-size:.72rem;color:var(--sub);width:25%}
+.node b{display:grid;place-items:center;width:40px;height:40px;margin:0 auto 4px;border-radius:50%;background:var(--card);border:3px solid var(--line);font-size:1.2rem}
+.node.on b{border-color:var(--pri)}.node.done b{background:var(--ok);border-color:var(--ok);color:#fff}
+.hero{position:absolute;top:-4px;font-size:1.5rem;transition:left .6s}
+.hearts{font-size:1.1rem;letter-spacing:2px}
+.cards{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
+.opt{padding:16px 6px;font-size:1.15rem;border:2px solid var(--line);border-radius:12px;background:var(--card);color:var(--ink);cursor:pointer;font-family:inherit}
+.opt.sel{border-color:var(--pri);background:color-mix(in srgb,var(--pri) 15%,var(--card))}
+.opt.right{border-color:var(--ok);background:var(--okbg)}.opt.wrong{border-color:var(--bad);background:var(--badbg)}
+.stones{display:grid;grid-template-columns:repeat(4,1fr);gap:8px}
+.stone{border-radius:50%;aspect-ratio:1;font-size:1.6rem;font-weight:700}
+.btn{display:block;width:100%;margin-top:12px;padding:13px;border:0;border-radius:12px;background:var(--pri);color:#fff;font-size:1rem;font-weight:700;cursor:pointer;font-family:inherit}
+.btn.alt{background:var(--card);color:var(--ink);border:2px solid var(--line)}
+.fb{margin-top:10px;padding:10px 12px;border-radius:10px;font-size:.92rem}
+.fb.ok{background:var(--okbg)}.fb.no{background:var(--badbg)}
+.small{color:var(--sub);font-size:.85rem}.tag{display:inline-block;background:var(--yel);color:#3a2d00;border-radius:8px;padding:1px 8px;font-size:.8rem;font-weight:700}
+.big{font-size:3rem;text-align:center}
+.chips{display:flex;flex-wrap:wrap;gap:4px;justify-content:center;margin:2px 0 4px}
+.chip{font-size:.72rem;padding:2px 8px;border-radius:99px;border:1px solid var(--line);color:var(--sub)}
+.chip.on{background:var(--pri);color:#fff;border-color:var(--pri)}
+.dot{fill:var(--sub);stroke:var(--card);stroke-width:2}.dot.on{fill:var(--pri)}
+#hero{transition:transform .7s ease}
+</style>
+</head>
+<body>
+<div class="wrap">
+<h1>🗝️ 목소리 탈출 맵</h1>
+<div class="small">조음 위치와 조음 방법으로 마왕의 성에서 목소리를 되찾자!</div>
+<div class="card" style="padding:10px 12px">
+<svg id="tract" viewBox="0 0 270 190" width="100%" role="img" aria-label="발음 기관 단면도: 입술에서 목청까지" style="max-height:260px">
+<path d="M130 18C80 18 58 40 56 66L42 84L56 94L54 112L50 122L56 130L52 142C60 168 90 178 130 178L260 178L260 18Z" fill="var(--bg)" stroke="var(--line)" stroke-width="3"/>
+<path d="M62 94Q110 84 175 100" fill="none" stroke="var(--line)" stroke-dasharray="4 3"/>
+<path d="M70 136Q100 122 130 126Q165 130 185 152L185 175L95 172Q75 162 70 136Z" fill="#f08a9b" opacity=".75"/>
+<path d="M60 121Q75 108 85 112Q120 92 160 104Q178 108 180 124" fill="none" stroke="var(--sub)" stroke-width="3" stroke-linecap="round"/>
+<path d="M190 126V178M214 126V178" stroke="var(--line)" stroke-width="3"/>
+<text x="232" y="60" font-size="11" fill="var(--sub)" text-anchor="middle">코로 가는 길</text>
+<text x="110" y="152" font-size="11" fill="#fff" text-anchor="middle">혀</text>
+<g font-size="9" font-weight="700" fill="#fff" text-anchor="middle">
+<circle class="dot" cx="58" cy="123" r="8"/><text x="58" y="126">1</text>
+<circle class="dot" cx="85" cy="111" r="8"/><text x="85" y="114">2</text>
+<circle class="dot" cx="125" cy="98" r="8"/><text x="125" y="101">3</text>
+<circle class="dot" cx="168" cy="106" r="8"/><text x="168" y="109">4</text>
+<circle class="dot" cx="202" cy="166" r="8"/><text x="202" y="169">5</text></g>
+<text id="hero" x="0" y="0" font-size="22" style="transform:translate(8px,116px)">🧒</text>
+</svg>
+<div class="chips" id="chips"></div>
+<div class="small" style="text-align:center">🧒가 서 있는 곳이 지금 소리가 나는 위치예요.</div>
+<div class="map" id="map"></div></div>
+<div id="sb"></div><div id="stage"></div>
+</div>
+<script>
+const Z=[
+{ico:"👄",name:"입술소리 성문",rule:"첫소리와 받침이 모두 <b>입술소리</b>인 단어를 모두 고르세요. (소리 없는 첫소리 ㅇ은 제외)",type:"multi",
+ rounds:[{c:["바보","뽀뽀","밤","나무","하늘","보리"],a:["바보","뽀뽀","밤"],x:"보리는 ㄹ(잇몸소리), 나무는 ㄴ, 하늘은 ㅎ·ㄹ이 섞여 있어요."},
+ {c:["마마","뱀","봄","바다","보석","사과"],a:["마마","뱀","봄"],x:"바다는 ㄷ(잇몸소리), 보석은 ㅅ·ㄱ, 사과는 ㅅ·ㄱ이 섞여 있어요."},
+ {c:["밥","무모","파마","감자","고래","별"],a:["밥","무모","파마"],x:"감자는 ㄱ·ㅈ, 고래는 ㄱ·ㄹ, 별은 ㄹ이 섞여 있어요."},
+ {c:["맴맴","봄밤","팝","도토리","고양이","사랑"],a:["맴맴","봄밤","팝"],x:"도토리는 ㄷ·ㅌ·ㄹ, 고양이는 ㄱ·ㅇ, 사랑은 ㅅ·ㄹ·ㅇ이 섞여 있어요."},
+ {c:["뺨","비빔","범","목","달","책"],a:["뺨","비빔","범"],x:"목은 ㄱ, 달은 ㄷ·ㄹ, 책은 ㅊ·ㄱ이 섞여 있어요."}],
+ sum:"입술소리는 두 입술이 닿으며 나는 소리예요. ㅂ ㅃ ㅍ는 파열음, ㅁ은 비음입니다."},
+{ico:"🌬️",name:"조음 방법의 벽",rule:"첫소리가 <b>마찰음</b>인 의성어·의태어만 통과! 좁은 틈으로 공기가 스치며 나는 소리예요.",type:"multi",
+ rounds:[{c:["쏴아","하하","씽씽","멍멍","쿵쿵","짹짹"],a:["쏴아","하하","씽씽"],x:"멍멍은 ㅁ(비음), 쿵쿵은 ㅋ(파열음), 짹짹은 ㅉ(파찰음)이에요."},
+ {c:["솔솔","호호","스르르","딩동","톡톡","꽥꽥"],a:["솔솔","호호","스르르"],x:"딩동·톡톡은 ㄷ·ㅌ(파열음), 꽥꽥은 ㄲ(파열음)이에요."},
+ {c:["헉헉","슝","쓱싹","콜록","땡땡","퐁당"],a:["헉헉","슝","쓱싹"],x:"콜록은 ㅋ, 땡땡은 ㄸ, 퐁당은 ㅍ으로 모두 파열음이에요."},
+ {c:["사각사각","쌩쌩","후루룩","부릉부릉","짝짝","달그락"],a:["사각사각","쌩쌩","후루룩"],x:"부릉부릉은 ㅂ·달그락은 ㄷ(파열음), 짝짝은 ㅉ(파찰음)이에요."},
+ {c:["쉭쉭","홀짝홀짝","소곤소곤","깜빡깜빡","뚝뚝","폴짝"],a:["쉭쉭","홀짝홀짝","소곤소곤"],x:"깜빡깜빡은 ㄲ, 뚝뚝은 ㄸ, 폴짝은 ㅍ으로 모두 파열음이에요."}],
+ sum:"마찰음은 공기가 좁은 틈을 스치며 나는 소리예요. 파열음은 막았다가 터뜨리고, 파찰음은 터뜨린 뒤 마찰이 이어집니다."},
+{ico:"🕳️",name:"센입천장 동굴",rule:"첫소리가 <b>센입천장소리</b>인 단어를 모두 고르세요. 혀바닥이 센입천장에 닿으며 나는 소리예요.",type:"multi",
+ rounds:[{c:["자전거","짜장면","치마","사탕","다리","가방"],a:["자전거","짜장면","치마"],x:"사탕은 ㅅ(잇몸 마찰음), 다리는 ㄷ(잇몸 파열음), 가방은 ㄱ(여린입천장 파열음)이에요."},
+ {c:["주사위","찌개","초콜릿","토끼","고기","시계"],a:["주사위","찌개","초콜릿"],x:"토끼는 ㅌ(잇몸), 고기는 ㄱ(여린입천장), 시계는 ㅅ(잇몸 마찰음)이에요."},
+ {c:["쏘쏘","찰칵","짹짹","쿵쿵","퐁당","땡땡"],a:["쏘쏘","찰칵","짹짹"],x:"쿵쿵은 ㅋ, 퐁당은 ㅍ, 땡땡은 ㄸ으로 모두 파열음이에요."},
+ {c:["장미","쥐","책상","호랑이","나비","별"],a:["장미","쥐","책상"],x:"호랑이는 ㅎ(목청), 나비는 ㄴ(잇몸), 별은 ㅂ(입술)이에요."}],
+ sum:"센입천장소리는 앞 혀가 센입천장에 닿으며 나는 소리예요. ㅈ ㅉ ㅊ은 막았다 터뜨린 뒤 마찰이 이어지는 파찰음입니다."},
+{ico:"🟡",name:"울림소리 다리",rule:"늪에 빠지지 않으려면 <b>노란양말</b> 징검다리만 밟으세요! 한 줄에 정답은 하나예요.",type:"stone",
+ rounds:[{c:["ㄱ","ㄴ","ㅂ","ㅈ"],a:"ㄴ"},{c:["ㅅ","ㅁ","ㄷ","ㅋ"],a:"ㅁ"},{c:["ㅍ","ㅎ","ㄹ","ㅊ"],a:"ㄹ"},{c:["ㅌ","ㅇ","ㅆ","ㄲ"],a:"ㅇ"},
+ {c:["ㅂ","ㅋ","ㄴ","ㅅ"],a:"ㄴ"},{c:["ㅌ","ㄹ","ㄱ","ㅎ"],a:"ㄹ"}],
+ info:{ㄴ:"ㄴ: 혀끝이 윗잇몸에 닿는 잇몸소리 · 비음",ㅁ:"ㅁ: 두 입술이 닿는 입술소리 · 비음",ㄹ:"ㄹ: 혀끝이 잇몸에 닿는 잇몸소리 · 유음",ㅇ:"ㅇ(받침): 혀 뒤가 여린입천장에 닿는 소리 · 비음"},
+ sum:"울림소리는 성대가 울리는 소리예요. ㄴ ㅁ ㅇ은 코로 공기가 나가는 비음, ㄹ은 혀 옆으로 흐르는 유음입니다."}
+];
+let zi=-1,ri=0,sel=new Set(),lock=false,miss=0,sc=0,total=0,T=0,S=[],cur=0,rm=0,BQ=[],bi=0,lives=3;
+let ac;function beep(f,d=.12,t="sine"){try{ac=ac||new(window.AudioContext||window.webkitAudioContext)();const o=ac.createOscillator(),g=ac.createGain();o.type=t;o.frequency.value=f;g.gain.value=.08;o.connect(g);g.connect(ac.destination);o.start();g.gain.exponentialRampToValueAtTime(.001,ac.currentTime+d);o.stop(ac.currentTime+d)}catch(e){}}
+function good(){beep(660,.1);setTimeout(()=>beep(880,.15),90)}function bad(){beep(180,.25,"sawtooth")}
+let pts=0,streak=0,nick="",LBU=null,BEST=0;
+function bestSave(){let b=0;try{b=+localStorage.getItem("ce_best")||0;if(pts>b){b=pts;localStorage.setItem("ce_best",b);}}catch(e){if(pts>b)b=pts;}return b;}
+const esc=s=>String(s).replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
+function sb(){document.querySelector("#sb").innerHTML=zi<0?"":`<div class="card" style="padding:8px"><div class="chips"><span class="chip on">🧑 ${esc(nick)}</span><span class="chip">⭐ ${pts}점</span><span class="chip">🔥 연속 ${streak}</span></div></div>`;}
+function award(ok,m){if(ok){streak++;pts+=(m?5:10)+Math.min(streak-1,5)*2;}else streak=0;sb();}
+function go(){nick=(document.querySelector("#nick").value||"").trim().slice(0,8)||"익명";pts=0;streak=0;enter(0);}
+async function renderLB(){try{const el=document.querySelector("#lb");if(!el)return;const db=await claude.use("db");if(!db){el.innerHTML='<p class="small">순위표는 이 환경에서 사용할 수 없어 내 점수만 표시돼요.</p>';return;}
+ if(LBU)LBU();LBU=db.collection("scores").orderBy("score","desc").limit(10).onSnapshot(s=>{const e=document.querySelector("#lb");if(!e)return;e.innerHTML=s.empty?'<p class="small">아직 기록이 없어요. 첨 번째 주인공이 되어 보세요!</p>':'<h3 style="margin:.2rem 0">🏆 우리 반 TOP 10</h3>'+s.docs.map((d,i)=>{const v=d.data();return `<div class="chips" style="justify-content:space-between;margin:2px 0"><span>${i+1}위 ${esc(v.name)}</span><b>${esc(v.score)}점</b></div>`}).join("");},()=>{el.innerHTML='<p class="small">순위표를 불러오지 못했어요.</p>';});}catch(e){}}
+async function saveScore(){try{const db=await claude.use("db"),u=await claude.use("user");if(db&&u){const id=await u.id(),ref=db.doc("scores/"+id),p=await ref.get();if(!(p.exists&&p.data().score>=pts))await ref.set({name:nick,score:pts,miss:miss,at:Date.now()});}}catch(e){}renderLB();}
+function sb0(){document.querySelector("#sb").innerHTML=T?`<div class="card" style="padding:8px"><div class="chips">${S.map((s,i)=>`<span class="chip ${i===cur?"on":""}">🚩${i+1}모둥 ${s}점</span>`).join("")}</div></div>`:"";}
+function team(ok,m){if(!T)return;if(ok)S[cur]+=m?5:10;cur=(cur+1)%T;sb();}
+function go0(n){T=n;S=Array(n).fill(0);cur=0;sb();enter(0);}
+function rank(){return `<p style="text-align:center"><b>⭐ 최종 ${pts}점</b> <span class="small">(마왕 처치 보너스 +20 포함)</span></p><p class="small" style="text-align:center">내 최고 기록 ${BEST}점</p>`;}
+function rank0(){if(!T)return"";const m=Math.max(...S);return `<p style="text-align:center"><b>🏆 ${S.map((s,i)=>s===m?i+1:0).filter(Boolean).join("·")}모둥 우승!</b></p><div class="chips">${S.map((s,i)=>`<span class="chip">${i+1}모둥 ${s}점</span>`).join("")}</div>`;}
+const BOSSQ=[{q:"ㅁ이 소리 나는 위치는?",o:["입술소리","잇몸소리","센입천장소리","여린입천장소리"],x:"ㅁ은 두 입술이 닿는 입술소리예요."},
+{q:"ㅅ의 조음 방법은?",o:["마찰음","파열음","파찰음","비음"],x:"ㅅ은 좁은 틈으로 공기가 스치는 마찰음이에요."},
+{q:"ㅈ ㅊ의 조음 방법은?",o:["파찰음","파열음","마찰음","유음"],x:"막았다 터뜨린 뒤 마찰이 이어지는 파찰음이에요."},
+{q:"ㄴ ㅁ ㅇ의 공통점은?",o:["코로 공기가 나가는 비음","혀 옆으로 흐른다","공기가 스친다","막았다 터뜨린다"],x:"ㄴ ㅁ ㅇ은 코로 공기가 나가는 비음이자 울림소리예요."},
+{q:"ㄹ의 조음 방법은?",o:["유음","비음","마찰음","파찰음"],x:"ㄹ은 혀 옆으로 공기가 흐르는 유음이에요."},
+{q:"다음 중 울림소리가 아닌 것은?",o:["ㅋ","ㄴ","ㄹ","ㅇ"],x:"ㅋ은 성대가 울리지 않는 안울림소리(파열음)예요."},
+{q:"ㅎ이 소리 나는 위치는?",o:["목청소리","입술소리","잇몸소리","센입천장소리"],x:"ㅎ은 목청(성문)에서 나는 목청소리예요."}];
+function boss(){zi=4;map();BQ=[...BOSSQ].sort(()=>Math.random()-.5).slice(0,6);bi=0;lives=3;bq();}
+function bq(){const q=BQ[bi];lock=false;const o=q.o.map((t,i)=>[t,i]).sort(()=>Math.random()-.5);
+ document.querySelector("#stage").innerHTML=`<div class="card">${T?`<div class="small">🚩 ${cur+1}모둥 차례!</div>`:""}<span class="tag">보스전 ${bi+1}/6</span><div class="big">😈</div><div class="hearts" style="text-align:center">마왕 ${"🟣".repeat(6-bi)}${"⚪".repeat(bi)}<br>나 ${"❤️".repeat(lives)}${"🖤".repeat(3-lives)}</div><h3>${q.q}</h3><div class="cards" style="grid-template-columns:1fr 1fr">${o.map(([t,i])=>`<button class="opt" onclick="ba(this,${i===0})">${t}</button>`).join("")}</div><div id="fb"></div></div>`;}
+function ba(b,ok){if(lock)return;const f=document.querySelector("#fb");
+ if(ok){lock=true;total++;sc++;good();award(true,0);b.classList.add("right");bi++;f.innerHTML=`<div class="fb ok">⚔️ 명중! ${BQ[bi-1].x}</div><button class="btn" onclick="${bi>=6?"end()":"bq()"}">${bi>=6?"마왕 처치! ▶":"다음 공격 ▶"}</button>`;}
+ else{b.classList.add("wrong");b.disabled=true;bad();miss++;lives--;streak=0;sb();if(lives<=0){lock=true;f.innerHTML=`<div class="fb no">💥 마왕의 반격! 쓰러졌어요…</div><button class="btn" onclick="boss()">다시 도전 ↺</button>`;}else f.innerHTML=`<div class="fb no">💔 빗나갔어요! 남은 목숨 ${lives}개</div>`;}}
+const $=s=>document.querySelector(s);
+const PT=[[58,123],[85,111],[125,98],[168,106],[202,166]],CH=["입술","잇몸","센입천장","여린입천장","목청"],ACT={0:[0],1:[1,4],2:[2],3:[0,1,3],4:[4]};
+function hop(i){const p=i<0?[8,128]:[PT[i][0]-10,PT[i][1]-8];$("#hero").style.transform=`translate(${p[0]}px,${p[1]}px)`;}
+function map(){ $("#map").innerHTML=Z.map((z,i)=>`<div class="node ${i<zi?"done":""} ${i===zi?"on":""}"><b>${i<zi?"✓":z.ico}</b>${z.name}</div>`).join("");
+ const a=ACT[zi]||[]; $("#chips").innerHTML=CH.map((c,i)=>`<span class="chip ${a.includes(i)?"on":""}">${i+1} ${c}소리</span>`).join("");
+ document.querySelectorAll(".dot").forEach((d,i)=>d.classList.toggle("on",a.includes(i))); hop([-1,0,1,2,3,4][zi+1]); sb(); }
+function map0(){ $("#map").innerHTML=Z.map((z,i)=>`<div class="node ${i<zi?"done":""} ${i===zi?"on":""}"><b>${i<zi?"✓":z.ico}</b>${z.name}</div>`).join("")+`<div class="hero" style="left:${zi<0?4:zi>=3?88:[4,34,62][zi]+2}%">🧒</div>`; }
+function start(){ zi=-1;miss=0;sc=0;total=0;T=0;S=[];cur=0;rm=0;pts=0;streak=0;sb(); map(); $("#stage").innerHTML=`<div class="card"><div class="big">😈</div><p>“크하하! 네 목소리는 내가 가져갔다. 되찾고 싶으면 발음 기관의 세 관문을 통과해 보아라!”</p><p class="small">입술 → 혀끝 → 목구멍 순서로 소리가 만들어지는 길을 따라갑니다. 정답을 못 맞히면 마왕의 방해(실수 +1)가 쌓여요.</p><input id="nick" maxlength="8" placeholder="닉네임 (8자까지)" value="${esc(nick)}" style="width:100%;padding:12px;border:2px solid var(--line);border-radius:12px;background:var(--card);color:var(--ink);font:inherit;margin-top:10px"><button class="btn" onclick="go()">모험 시작 ▶</button></div>`; }
+function enter(i){ zi=i;ri=0; map(); round(); }
+function round(){ const z=Z[zi],r=z.rounds[ri];sel=new Set();lock=false;rm=0;
+ const body=z.type==="multi"?`<div class="cards">${r.c.map(w=>`<button class="opt" data-w="${w}" onclick="pick(this)">${w}</button>`).join("")}</div><button class="btn" id="go" onclick="check()">확인</button>`
+ :`<div class="stones">${r.c.map(w=>`<button class="opt stone" data-w="${w}" onclick="step(this)">${w}</button>`).join("")}</div>`;
+ $("#stage").innerHTML=`<div class="card">${T?`<div class="small">🚩 ${cur+1}모둥 차례!</div>`:""}<span class="tag">구역 ${zi+1} · ${ri+1}/${z.rounds.length}</span><h2 style="margin:.4rem 0">${z.ico} ${z.name}</h2><p>${z.rule}</p>${body}<div id="fb"></div></div>`; }
+function pick(b){ if(lock)return; const w=b.dataset.w; sel.has(w)?(sel.delete(w),b.classList.remove("sel")):(sel.add(w),b.classList.add("sel")); }
+function done(ok,msg){ lock=true; total++; if(ok)sc++; else miss++; ok?good():bad(); award(ok,rm);
+ const last=ri===Z[zi].rounds.length-1;
+ $("#fb").innerHTML=`<div class="fb ${ok?"ok":"no"}">${msg}</div><button class="btn" onclick="${last?"summary()":"ri++;round()"}">${last?"구역 정리 보기":"다음 문제 ▶"}</button>`; }
+function check(){ if(lock)return; const r=Z[zi].rounds[ri]; let ok=sel.size===r.a.length&&r.a.every(w=>sel.has(w));
+ document.querySelectorAll(".opt").forEach(b=>{const w=b.dataset.w; if(r.a.includes(w))b.classList.add("right"); else if(sel.has(w))b.classList.add("wrong");});
+ $("#go").style.display="none"; done(ok,(ok?"✅ 성문이 열렸어요! ":"❌ 마왕이 방해했어요. ")+r.x); }
+function step(b){ if(lock)return; const z=Z[zi],r=z.rounds[ri],w=b.dataset.w;
+ if(w===r.a){b.classList.add("right");done(true,"✅ 건넜어요! "+z.info[w]);hop({"ㄴ":1,"ㄹ":1,"ㅁ":0,"ㅇ":3}[w]);}
+ else{b.classList.add("wrong");miss++;rm++;bad();streak=0;sb();$("#fb").innerHTML=`<div class="fb no">💦 풍덩! ${w}은(는) 안울림소리예요. 노란양말에 해당하는 자음을 다시 떠올려 보세요.</div>`;b.disabled=true;} }
+function summary(){ const z=Z[zi]; $("#stage").innerHTML=`<div class="card"><h2 style="margin-top:0">${z.ico} 구역 ${zi+1} 클리어!</h2><p>📘 ${z.sum}</p><button class="btn" onclick="${zi<3?`enter(${zi+1})`:"boss()"}">${zi<3?"다음 구역으로 ▶":"마왕의 성으로 ▶"}</button></div>`; }
+function end(){ zi=4; pts+=20; map(); good(); BEST=bestSave(); const st=miss===0?"⭐⭐⭐":miss<=3?"⭐⭐":"⭐";
+ $("#stage").innerHTML=`<div class="card"><div class="big">🏰</div><h2 style="text-align:center;margin:.2rem 0">목소리를 되찾았다! ${st}</h2><p style="text-align:center">정답 ${sc}/${total}, 실수 ${miss}번</p>${rank()}<p class="small">입술(ㅁ) → 혀끝·잇몸(ㄴ ㄹ ㅅ) → 목구멍(ㅎ)으로 이어지는 소리의 길, 이제 기억나죠? 친구들과 점수를 비교하거나 한 번 더 도전해 보세요.</p><button class="btn" onclick="start()">다시 도전 ↺</button></div>`; }
+start();
+</script>
+</body>
+</html>
